@@ -1,0 +1,77 @@
+create table Pacienti(
+cnp char(13) Primary key,
+nume varchar(30) Not null,
+adresa varchar(30) not null,
+data_nasterii date not null);
+
+table created
+
+create consultatii(
+cnp char(13) references pacienti(cnp),
+diagnostic varchar(30) not null,
+nr_consult number(5) Primary Key,
+data date not null,
+plata number(10) not null);
+
+table created 
+
+create table plati(
+nr_consult number(5) references consultatii(nr_consult),
+rata number(10) not null,
+data date not null);
+
+table created
+
+insert into pacienti values('1234567890123', 'nume1', 'adresa1', '10.01.2000');
+insert into pacienti values('1234567890122', 'nume2', 'adresa2', '25.10.1999');
+
+insert into conultatii values('1234567890123', 'Pneumonie', 1, '21.03.2015',1000);
+insert into conultatii values('1234567890123', 'Sinuzita', 2, '11.04.2017',500);
+insert into conultatii values('1234567890122', 'Gripa', 3, '15.09.2015', 50);
+
+insert into plati values(1, 500, '21.03.2015);
+insert into plati values(1, 400, '28.03.2015);
+insert into plati values(2, 35, '15.09.2015);
+
+
+select nr_consult, sum(rata) as Suma_platita from plati
+group by nr_consult;
+
+
+select plati.nr_consult, plata-sum(rata) as Suma_neplatita,cnp from plati,consultatii
+group by plati.nr_consult;
+
+
+select consultatii.nr_consult, consultatii.cnp, consultatii.plata-sum(plati.rata) as De Plata from consultatii, plati
+where consultatii.nr_consult=plati.nr_consult
+group by consultatii.nr_consult;
+
+
+select a.nr_consult, a.cnp, a.plata-sum(b.rata) as De_Plata from consultatii a, plati b
+where a.nr_consult=b.nr_consult
+group by a.nr_consult
+having a.plata-sum(b.rata)=0
+order by a.nr_consult;
+
+
+select b.nr_consult, a.nume, b.cnp, b.plata- sum(c.rata) as De_Platit from pacienti a, consultatii b, plati c
+where a.cnp=b.cnp and b.nr_consult=c.nr_consult
+group by b.nr_consult
+order by b.nr_consult
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
